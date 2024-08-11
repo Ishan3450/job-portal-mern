@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const jobSchema = mongoose.Schema(
+const jobSchema = mongoose.Schema( 
   {
     title: {
       type: String,
@@ -38,6 +38,10 @@ const jobSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "user",
       required: true,
+    },
+    experience:{
+      type: Number,
+      required: true
     },
     applicants: [
       {
