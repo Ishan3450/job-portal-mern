@@ -4,8 +4,15 @@ const { connectDB } = require("./db/index");
 const userRouter = require("./routes/userRoute");
 const companyRouter = require("./routes/companyRoute");
 const jobRouter = require("./routes/jobRoute");
+const cors = require("cors");
 
 const app = express();
+const corsOptions = {
+  origin: "http://localhost:5173",
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
