@@ -21,9 +21,9 @@ const NavBar = () => {
 
             <div className="flex gap-12 items-center">
                 <ul className="flex gap-5">
-                    <li className="cursor-pointer">Home</li>
-                    <li className="cursor-pointer">Jobs</li>
-                    <li className="cursor-pointer">Browse</li>
+                <li className="cursor-pointer"><Link to={"/"}>Home</Link></li>
+                <li className="cursor-pointer"><Link to={"/jobs"}>Jobs</Link></li>
+                    <li className="cursor-pointer"><Link to={"/browse"}>Browse</Link></li>
                 </ul>
 
                 {loggedIn ? (
