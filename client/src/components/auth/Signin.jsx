@@ -1,4 +1,4 @@
-import { setLoading } from "@/redux/authSlice";
+import { setLoading, setUser } from "@/redux/authSlice";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import React, { useState } from "react";
@@ -39,12 +39,17 @@ const Signin = () => {
       );
 
       if (response?.data?.success) {
+        dispatch(setUser(response.data.user));
         toast.success("Logged in");
         navigate("/");
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(
+        error.response?.data?.message
+          ? error.response.data.message
+          : "An unexpected error occurred."
+      );
     } finally {
       dispatch(setLoading(false));
     }

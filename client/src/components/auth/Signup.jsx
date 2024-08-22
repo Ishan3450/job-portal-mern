@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoading } from "@/redux/authSlice";
+import { setLoading, setUser } from "@/redux/authSlice";
 import { Loader2 } from "lucide-react";
 
 const Signup = () => {
@@ -17,6 +17,7 @@ const Signup = () => {
     phone: "",
     password: "",
     role: "candidate",
+    file: "",
   });
 
   function handleOnChange(e) {
@@ -56,12 +57,17 @@ const Signup = () => {
       );
 
       if (response?.data?.success) {
+        dispatch(setUser(response.data.user));
         toast.success("Account created");
         navigate("/");
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response.data.message);
+      toast.error(
+        error.response?.data?.message
+          ? error.response.data.message
+          : "An unexpected error occurred."
+      );
     } finally {
       dispatch(setLoading(false));
     }
@@ -144,14 +150,14 @@ const Signup = () => {
         </div>
         <div className="mb-5">
           <label
-            htmlFor="profile"
+            htmlFor="file"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
             Upload profile
           </label>
           <Input
-            id="profile"
-            name="profile"
+            id="file"
+            name="file"
             type="file"
             onChange={handleFileChange}
             className="bg-gray-50 border border-gray-300 text-gray-900 cursor-pointer"
@@ -162,7 +168,7 @@ const Signup = () => {
             htmlFor="role"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Select your country
+            Select your role
           </label>
           <select
             id="role"

@@ -7,6 +7,7 @@ const signJwtToken = require("../utils/signJwtToken");
 async function register(req, res) {
   try {
     const { fullname, email, phone, password, role } = req.body;
+    const file = req.file;
 
     const registerUserZodSchema = zod.object({
       fullname: zod.string().min(2),
@@ -57,6 +58,14 @@ async function register(req, res) {
     res.status(201).json({
       message: "Account created successfully",
       success: true,
+      user: {
+        _id: createdUser._id,
+        fullname: createdUser.fullname,
+        email: createdUser.email,
+        phone: createdUser.phone,
+        role: createdUser.role,
+        profile: createdUser.profile,
+      },
     });
   } catch (error) {
     console.log(error);
@@ -116,6 +125,14 @@ async function login(req, res) {
     res.status(200).json({
       message: "Logged in",
       success: true,
+      user: {
+        _id: user._id,
+        fullname: user.fullname,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
+        profile: user.profile,
+      },
     });
   } catch (error) {
     console.log(error);
@@ -142,10 +159,56 @@ function logout(req, res) {
   }
 }
 
-// TODO: add updated profile controller
+async function update(req, res) {
+  const { fullname, email, phone, bio, skills } = req.body;
+  const file = req.file;
+
+  // TODO: file will be uploaded to cloudinary
+
+  try {
+    const userId = req.userId;
+
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+
+    if (fullname) user.fullname = fullname;
+    if (email) user.email = email;
+    if (phone) user.phone = phone;
+    if (bio) user.profile.bio = bio;
+    if (skills) user.profile.skills = skills;
+
+    await user.save();
+    user = {
+      _id: user._id,
+      fullname: user.fullname,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      profile: user.profile,
+    };
+
+    return res.status(200).json({
+      message: "Profile updated successfully.",
+      user,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      message: "Something went wrong",
+      success: false,
+    });
+  }
+}
 
 module.exports = {
   register,
   login,
   logout,
+  update,
 };
