@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Popover,
@@ -8,10 +8,36 @@ import {
 } from "@/components/ui/popover";
 import { LogOut, User2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { setUser } from "@/redux/authSlice";
 
 const NavBar = () => {
   const { user } = useSelector((store) => store.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/user/logout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (response?.data.success) {
+        dispatch(setUser(null));
+        toast.success("Logged out");
+        navigate("/");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Something went wrong");
+    }
+  };
 
   return (
     <div className="flex justify-between pt-3 items-center">
@@ -34,27 +60,26 @@ const NavBar = () => {
           <Popover>
             <PopoverTrigger>
               <Avatar className="cursor-pointer">
-                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarImage src={user.profile.profilePhoto} />
                 <AvatarFallback>U</AvatarFallback>
               </Avatar>
             </PopoverTrigger>
             <PopoverContent className="mr-2">
               <div>
                 <div className="font-semibold text-xl">{user.fullname}</div>
-                <div className="text italic mt-1">
-                {user.profile.bio}
-                </div>
+                <div className="text italic mt-1">{user.profile.bio}</div>
                 <div className="mt-3 font-medium cursor-pointer flex items-center gap-3">
                   <User2 />
                   <Link to={"/profile"}>
                     <Button variant="link">Profile</Button>
                   </Link>
                 </div>
-                <div className="  font-medium cursor-pointer flex items-center gap-3">
+                <div
+                  className="font-medium cursor-pointer flex items-center gap-3"
+                  onClick={logout}
+                >
                   <LogOut />
-                  <Link to={"/"}>
-                    <Button variant="link">Logout</Button>
-                  </Link>
+                  <Button variant="link">Logout</Button>
                 </div>
               </div>
             </PopoverContent>

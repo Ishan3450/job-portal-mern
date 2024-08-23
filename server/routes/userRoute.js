@@ -7,7 +7,7 @@ const userRouter = Router();
 
 userRouter.post("/register", singleUpload, register);
 userRouter.post("/login", login);
-userRouter.post("/logout", logout);
+userRouter.post("/logout", isLoggedIn, logout);
 userRouter.put("/profile/update", singleUpload, isLoggedIn, update);
 
 module.exports = userRouter;

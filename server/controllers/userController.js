@@ -3,11 +3,20 @@ const { User } = require("../db/index");
 const bcrypt = require("bcrypt");
 const getHashedPassowrd = require("../utils/getHashOfPassword");
 const signJwtToken = require("../utils/signJwtToken");
+const { getDataUri } = require("../utils/getDataUri");
+const { cloudinary } = require("../utils/cloudinary");
 
 async function register(req, res) {
   try {
     const { fullname, email, phone, password, role } = req.body;
-    const file = req.file;
+    const profile = req.file;
+
+    if(!profile){
+      return res.status(400).json({
+        message: "Please provide a profile picture",
+        success: false  
+      })
+    }
 
     const registerUserZodSchema = zod.object({
       fullname: zod.string().min(2),
@@ -40,32 +49,36 @@ async function register(req, res) {
       });
     }
 
+    const fileUri = getDataUri(profile);
+    const cloudinaryResponse = await cloudinary.uploader.upload(
+      fileUri.content,
+      {
+        resource_type: "auto",
+      }
+    );
+
     const createdUser = await User.create({
       fullname,
       email,
       phone,
       password: await getHashedPassowrd(password),
       role,
-    });
-
-    const jwtToken = signJwtToken({ userId: createdUser._id });
-    res.cookie("authorization", jwtToken, {
-      maxAge: 24 * 60 * 60 * 1000,
-      httpsOnly: true,
-      sameSite: "strict",
+      profile: {
+        profilePhoto: cloudinaryResponse?.secure_url,
+      },
     });
 
     res.status(201).json({
       message: "Account created successfully",
       success: true,
-      user: {
-        _id: createdUser._id,
-        fullname: createdUser.fullname,
-        email: createdUser.email,
-        phone: createdUser.phone,
-        role: createdUser.role,
-        profile: createdUser.profile,
-      },
+      // user: {
+      //   _id: createdUser._id,
+      //   fullname: createdUser.fullname,
+      //   email: createdUser.email,
+      //   phone: createdUser.phone,
+      //   role: createdUser.role,
+      //   profile: createdUser.profile,
+      // },
     });
   } catch (error) {
     console.log(error);
@@ -160,12 +173,9 @@ function logout(req, res) {
 }
 
 async function update(req, res) {
-  const { fullname, email, phone, bio, skills } = req.body;
-  const file = req.file;
-
-  // TODO: file will be uploaded to cloudinary
-
   try {
+    const { fullname, email, phone, bio, skills } = req.body;
+    const file = req.file;
     const userId = req.userId;
 
     let user = await User.findById(userId);
@@ -176,11 +186,31 @@ async function update(req, res) {
       });
     }
 
+    // cloudinary uploading part
+    let cloudinaryResponse;
+    if(file){
+      const fileUri = getDataUri(file);
+      cloudinaryResponse = await cloudinary.uploader.upload(
+        fileUri.content,
+        {
+          resource_type: "auto",
+        }
+      );  
+    }
+
     if (fullname) user.fullname = fullname;
     if (email) user.email = email;
     if (phone) user.phone = phone;
     if (bio) user.profile.bio = bio;
     if (skills) user.profile.skills = skills;
+    if (cloudinaryResponse) {
+      let url = cloudinaryResponse.secure_url;
+
+      if (file.mimetype === "application/pdf") {
+        url = `${url.substring(0, url.length - 4)}.png`;
+      }
+      user.profile.resumeUrl = url; // storing the cloudinary url
+    }
 
     await user.save();
     user = {
@@ -209,6 +239,6 @@ async function update(req, res) {
 module.exports = {
   register,
   login,
-  logout,
+  logout, 
   update,
 };

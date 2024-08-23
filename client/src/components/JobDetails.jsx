@@ -1,5 +1,5 @@
-import React from "react";
-import { useParams } from "react-router-dom";
+import React, { useCallback, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "./ui/button";
 import {
   Table,
@@ -10,31 +10,74 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import useGetJobById from "@/hooks/useGetJobById";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const JobDetails = () => {
+  const navigate = useNavigate();
   const { id } = useParams();
-  const isApplied = false;
+  const job = useGetJobById(id);
+  const { user } = useSelector((store) => store.auth);
+  const userId = user?._id;
+
+  const isAlreadyApplied = () => {
+    return job?.applicants.some(
+      (applicantObj) => applicantObj.applicant === userId
+    );
+  };
+  const isApplied = isAlreadyApplied();
+
+  const applyJob = async () => {
+    try {
+      const response = await axios.post(
+        `http://localhost:3000/jobs/applications/apply/${id}`,
+        {},
+        { withCredentials: true }
+      );
+
+      if (!response.data.success) {
+        throw new Error();
+      }
+
+      toast.success(response.data.message);
+      navigate("/profile");
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error.response?.data?.message
+          ? error.response.data.message
+          : "An unexpected error occurred."
+      );
+    }
+  };
+
   return (
     <div className="border my-5 rounded-xl p-8">
       <div className="flex justify-between">
         <div>
-          <div className="text-2xl font-semibold">Company Name</div>
+          <div className="text-2xl font-semibold">{job?.company?.name}</div>
           <div className="my-5">
             <ul className="flex gap-3 text-sm">
               <li className="border border-gray-200 px-2 py-1 font-bold rounded-full text-blue-700">
-                12 Positions
+                {job?.positions} Positions
               </li>
               <li className="border border-gray-200 px-2 py-1 font-bold rounded-full text-red-600">
-                Part time
+                {job?.jobType}
               </li>
               <li className="border border-gray-200 px-2 py-1 font-bold rounded-full text-purple-800">
-                12 LPA
+                {job?.salary} LPA
               </li>
             </ul>
           </div>
         </div>
         <div>
-          <Button disabled={isApplied} variant={isApplied ? "secondary" : ""}>
+          <Button
+            disabled={isApplied}
+            variant={isApplied ? "secondary" : ""}
+            onClick={!isApplied ? applyJob : null}
+          >
             {isApplied ? "Already applied" : "Apply"}
           </Button>
         </div>
@@ -49,36 +92,31 @@ const JobDetails = () => {
         <TableBody>
           <TableRow className="text-lg">
             <TableCell className="font-medium">Role</TableCell>
-            <TableCell>Frontend Developer</TableCell>
+            <TableCell>{job?.title}</TableCell>
           </TableRow>
           <TableRow className="text-lg">
             <TableCell className="font-medium">Location</TableCell>
-            <TableCell>Ahmedabad</TableCell>
+            <TableCell>{job?.company?.location}</TableCell>
           </TableRow>
           <TableRow className="text-lg">
             <TableCell className="font-medium">Description</TableCell>
-            <TableCell>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Aliquam
-              doloribus velit exercitationem commodi quibusdam facere cum,
-              repellendus architecto porro dignissimos iusto voluptatem, dolores
-              deserunt ad veniam voluptas? Iste, aperiam modi.
-            </TableCell>
+            <TableCell>{job?.description}</TableCell>
           </TableRow>
           <TableRow className="text-lg">
             <TableCell className="font-medium">Experience</TableCell>
-            <TableCell>2 years</TableCell>
+            <TableCell>{job?.experience} years</TableCell>
           </TableRow>
           <TableRow className="text-lg">
             <TableCell className="font-medium">Salary</TableCell>
-            <TableCell>12 LPA</TableCell>
+            <TableCell>{job?.salary} LPA</TableCell>
           </TableRow>
           <TableRow className="text-lg">
             <TableCell className="font-medium">Total Applicants</TableCell>
-            <TableCell>4</TableCell>
+            <TableCell>{job?.applicants.length}</TableCell>
           </TableRow>
           <TableRow className="text-lg">
             <TableCell className="font-medium">Posted on</TableCell>
-            <TableCell>17-07-24</TableCell>
+            <TableCell>{job?.createdAt.split("T")[0]}</TableCell>
           </TableRow>
         </TableBody>
       </Table>

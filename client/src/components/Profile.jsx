@@ -6,9 +6,9 @@ import UpdateProfileDetailsDialog from "./UpdateProfileDetailsDialog";
 import { useSelector } from "react-redux";
 
 const Profile = () => {
-  const haveResume = true;
   const [open, setOpen] = useState(false);
   const { user } = useSelector((store) => store.auth);
+  const haveResume = user.profile.resumeUrl;
 
   return (
     <div>
@@ -17,10 +17,10 @@ const Profile = () => {
           <div className="flex gap-5 items-center">
             <Avatar className="cursor-pointer">
               <AvatarImage
-                src="https://github.com/shadcn.png"
+                src={user.profile.profilePhoto}
                 className="w-20 h-20 rounded-xl"
               />
-              <AvatarFallback>U</AvatarFallback>
+              <AvatarFallback>Profile picture not found</AvatarFallback>
             </Avatar>
 
             <div className="max-w-4xl">
@@ -50,28 +50,35 @@ const Profile = () => {
         <div>
           <div className="text-xl font-semibold">Skills</div>
           <div className="mt-2 flex gap-2 flex-wrap">
-            {user?.profile.skills.split(",").map((skill) => {
-              return (
-                <span className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
-                  {skill}
-                </span>
-              );
-            })}
+            {user?.profile?.skills?.length > 0 ? (
+              user?.profile.skills.split(",").map((skill) => {
+                return (
+                  <span className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
+                    {skill}
+                  </span>
+                );
+              })
+            ) : (
+              <span className="inline-flex items-center rounded-md bg-gray-50 px-2 py-1 font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
+                No skills added
+              </span>
+            )}
           </div>
         </div>
 
         <div className="my-4 flex flex-col gap-1">
           <div className="text-xl font-semibold">Resume</div>
-          <div className="font-mono text-lg">
+          <div className="font-mono">
             {haveResume ? (
               <a
-                href={user?.profile.resumeUrl ? user?.profile.resumeUrl : "#"}
+                href={user?.profile.resumeUrl}
                 className="font-semibold text-blue-400 hover:underline"
+                target="_blank"
               >
                 Link
               </a>
             ) : (
-              <span>Please upload your resume !!</span>
+              <span className="">Please upload your resume !!</span>
             )}
           </div>
         </div>

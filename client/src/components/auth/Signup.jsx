@@ -59,7 +59,7 @@ const Signup = () => {
       if (response?.data?.success) {
         dispatch(setUser(response.data.user));
         toast.success("Account created");
-        navigate("/");
+        navigate("/login");
       }
     } catch (error) {
       console.log(error);
@@ -159,6 +159,7 @@ const Signup = () => {
             id="file"
             name="file"
             type="file"
+            required
             onChange={handleFileChange}
             className="bg-gray-50 border border-gray-300 text-gray-900 cursor-pointer"
           />
