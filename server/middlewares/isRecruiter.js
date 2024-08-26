@@ -2,7 +2,7 @@ const { User } = require("../db/index");
 
 module.exports = async (req, res, next) => {
   try {
-    if (!req.userRole) {
+    if (!req.userRole || req.userRole === "candidate") {
       const userId = req.userId;
       const user = await User.findOne({ _id: userId });
 

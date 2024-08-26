@@ -1,6 +1,18 @@
 const zod = require("zod");
 const { Job } = require("../db/index");
 
+const postJobZodSchema = zod.object({
+  title: zod.string().min(1),
+  description: zod.string().min(1),
+  salary: zod.number().min(1),
+  location: zod.string().min(1),
+  jobType: zod.string().min(1),
+  positions: zod.number().min(1),
+  company: zod.string().min(1),
+  requirements: zod.string().min(1),
+  experience: zod.number().min(0),
+});
+
 async function postJob(req, res) {
   try {
     const {
@@ -16,28 +28,16 @@ async function postJob(req, res) {
     } = req.body;
     const createdBy = req.userId;
 
-    const postJobZodSchema = zod.object({
-      title: zod.string().min(1),
-      description: zod.string().min(1),
-      salary: zod.number().min(1),
-      location: zod.string().min(1),
-      jobType: zod.string().min(1),
-      positions: zod.number().min(1),
-      company: zod.string().min(1),
-      requirements: zod.string().min(1),
-      experience: zod.number().min(0),
-    });
-
     const validationResponse = postJobZodSchema.safeParse({
       title,
       description,
-      salary,
+      salary: parseInt(salary),
       location,
       jobType,
-      positions,
+      positions: parseInt(positions),
       company,
       requirements,
-      experience,
+      experience: parseInt(experience),
     });
 
     if (!validationResponse.success) {
@@ -136,7 +136,7 @@ async function getJobById(req, res) {
 async function getRecruiterJobs(req, res) {
   try {
     const recruiterId = req.userId;
-    const jobs = await Job.find({ createdBy: recruiterId });
+    const jobs = await Job.find({ createdBy: recruiterId }).populate("company");
 
     if (!jobs) {
       return res.status(404).json({
@@ -156,9 +156,78 @@ async function getRecruiterJobs(req, res) {
   }
 }
 
+async function updateJobDetails(req, res) {
+  try {
+    const id = req.params.jobId;
+    const job = await Job.findById(id);
+
+    if (!job) {
+      return res.status(404).json({
+        message: "Job not found",
+        message: false,
+      });
+    }
+
+    const {
+      title,
+      description,
+      requirements,
+      salary,
+      location,
+      jobType,
+      positions,
+      company,
+      experience,
+    } = req.body;
+
+    const validationResponse = postJobZodSchema.safeParse({
+      title,
+      description,
+      salary: parseInt(salary),
+      location,
+      jobType,
+      positions: parseInt(positions),
+      company,
+      requirements,
+      experience: parseInt(experience),
+    });
+
+    if (!validationResponse.success) {
+      return res.status(400).json({
+        message: "Invalid inputs provided",
+        success: false,
+      });
+    }
+
+    if (title) job.title = title;
+    if (description) job.description = description;
+    if (requirements) job.requirements = requirements;
+    if (salary) job.salary = parseInt(salary);
+    if (location) job.location = location;
+    if (jobType) job.jobType = jobType;
+    if (positions) job.positions = parseInt(positions);
+    if (company) job.company = company;
+    if (experience) job.experience = parseInt(experience);
+
+    await job.save();
+
+    res.status(200).json({
+      message: "Details updated",
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      message: "Something went wrong",
+      message: false,
+    });
+  }
+}
+
 module.exports = {
   postJob,
   getJobsBasedOnKeyword,
   getJobById,
   getRecruiterJobs,
+  updateJobDetails,
 };

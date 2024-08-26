@@ -11,11 +11,11 @@ async function register(req, res) {
     const { fullname, email, phone, password, role } = req.body;
     const profile = req.file;
 
-    if(!profile){
+    if (!profile) {
       return res.status(400).json({
         message: "Please provide a profile picture",
-        success: false  
-      })
+        success: false,
+      });
     }
 
     const registerUserZodSchema = zod.object({
@@ -36,7 +36,7 @@ async function register(req, res) {
 
     if (!inputValidationResult.success) {
       return res.status(400).json({
-        message: "Wrong inputs provided",
+        message: "Missing or wrong inputs provided",
         success: false,
       });
     }
@@ -107,7 +107,7 @@ async function login(req, res) {
 
     if (!inputValidationResult.success) {
       return res.status(400).json({
-        message: "Wrong inputs provided",
+        message: "Missing or wrong inputs provided",
         success: false,
       });
     }
@@ -158,8 +158,7 @@ async function login(req, res) {
 
 function logout(req, res) {
   try {
-    res.clearCookie("authorization");
-    res.status(200).json({
+    res.status(200).cookie("authorization", "", { maxAge: 0 }).json({
       message: "Logged out",
       success: true,
     });
@@ -188,14 +187,11 @@ async function update(req, res) {
 
     // cloudinary uploading part
     let cloudinaryResponse;
-    if(file){
+    if (file) {
       const fileUri = getDataUri(file);
-      cloudinaryResponse = await cloudinary.uploader.upload(
-        fileUri.content,
-        {
-          resource_type: "auto",
-        }
-      );  
+      cloudinaryResponse = await cloudinary.uploader.upload(fileUri.content, {
+        resource_type: "auto",
+      });
     }
 
     if (fullname) user.fullname = fullname;
@@ -239,6 +235,6 @@ async function update(req, res) {
 module.exports = {
   register,
   login,
-  logout, 
+  logout,
   update,
 };

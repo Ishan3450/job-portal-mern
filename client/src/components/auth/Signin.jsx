@@ -41,7 +41,12 @@ const Signin = () => {
       if (response?.data?.success) {
         dispatch(setUser(response.data.user));
         toast.success("Logged in");
-        navigate("/");
+        
+        if(response.data.user.role === "recruiter"){
+          navigate("/admin/companies")
+        } else {
+          navigate("/");
+        }
       }
     } catch (error) {
       console.log(error);
