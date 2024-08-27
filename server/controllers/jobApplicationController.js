@@ -1,4 +1,4 @@
-const { Job, JobApplication } = require("../db/index");
+const { Job, JobApplication, User } = require("../db/index");
 const zod = require("zod")
 
 // for candidate
@@ -29,6 +29,7 @@ async function applyJob(req, res) {
         })
 
         await Job.updateOne({ _id: jobId }, { $push: { applicants: newApplication._id } });
+        await User.updateOne({_id: userId}, {$push: { "profile.companiesApplied": newApplication._id}})
         res.status(201).json({
             message: "Application received",
             success: true

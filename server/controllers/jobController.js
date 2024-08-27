@@ -136,7 +136,12 @@ async function getJobById(req, res) {
 async function getRecruiterJobs(req, res) {
   try {
     const recruiterId = req.userId;
-    const jobs = await Job.find({ createdBy: recruiterId }).populate("company");
+    const jobs = await Job.find({ createdBy: recruiterId }).populate("company").populate({
+      path: "applicants",
+      populate: {
+        path: "applicant"
+      }
+    });
 
     if (!jobs) {
       return res.status(404).json({

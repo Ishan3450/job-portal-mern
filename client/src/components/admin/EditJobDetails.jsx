@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { Label } from "@radix-ui/react-label";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -8,40 +8,25 @@ import { Loader2Icon } from "lucide-react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import useGetJobById from "@/hooks/useGetJobById";
+import { useSelector } from "react-redux";
 
 const EditJobDetails = () => {
   const { id } = useParams();
-  const jobDetails = useGetJobById(id);
   const navigate = useNavigate();
+  const { singleJob } = useSelector((store) => store.job);
+
   const [input, setInput] = useState({
-    title: "",
-    description: "",
-    requirements: "",
-    salary: "",
-    location: "",
-    jobType: "",
-    positions: "",
-    company: "",
-    experience: "",
+    title: singleJob?.title || "",
+    description: singleJob?.description || "",
+    requirements: singleJob?.requirements || "",
+    salary: singleJob?.salary || "",
+    location: singleJob?.location || "",
+    jobType: singleJob?.jobType || "",
+    positions: singleJob?.positions || "",
+    company: singleJob?.company._id || "",
+    experience: singleJob?.experience || 0,
   });
-
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setInput({
-      ...input,
-      title: jobDetails?.title || "",
-      description: jobDetails?.description || "",
-      requirements: jobDetails?.requirements || "",
-      salary: jobDetails?.salary || "",
-      location: jobDetails?.location || "",
-      jobType: jobDetails?.jobType || "",
-      positions: jobDetails?.positions || "",
-      company: jobDetails?.company._id || "",
-      experience: jobDetails?.experience || "",
-    });
-  }, [jobDetails]);
 
   const handleInputChange = (e) => {
     setInput({
@@ -50,7 +35,7 @@ const EditJobDetails = () => {
     });
   };
 
-  const postJob = async (e) => {
+  const updateJob = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
@@ -84,7 +69,7 @@ const EditJobDetails = () => {
 
   return (
     <div className="max-w-2xl border p-5 rounded-xl mt-5 m-auto">
-      <form className="flex flex-col gap-4" onSubmit={postJob}>
+      <form className="flex flex-col gap-4" onSubmit={updateJob}>
         <div className="font-bold text-3xl">Update job details</div>
         <hr />
         <div className="flex gap-2 w-full">

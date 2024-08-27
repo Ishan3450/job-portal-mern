@@ -5,7 +5,10 @@ module.exports = (req, res, next) => {
   try {
     const authToken = req.cookies["authorization"];
     if (!authToken) {
-      throw new Error("No auth token found");
+      return res.status(401).json({
+        message: "No auth token found",
+        success: false,
+      });
     }
 
     const decoded = jwt.verify(authToken, process.env.JWT_SECRET_PASSWORD);

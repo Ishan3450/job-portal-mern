@@ -9,19 +9,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setSingleJobDetail } from "@/redux/jobSlice";
 
 const PostedJobs = ({ filter }) => {
   const [recruiterJobs, setRecruiterJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState(recruiterJobs);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -76,21 +79,27 @@ const PostedJobs = ({ filter }) => {
                       <MoreHorizontalIcon />
                     </PopoverTrigger>
                     <PopoverContent className="mx-2 w-fit flex flex-col gap-2">
-                      <Link
-                        to={`/admin/job/edit/${job._id}`}
+                      <div
                         className="flex gap-[5px] items-center cursor-pointer hover:underline hover:text-blue-400"
+                        onClick={() => {  
+                          dispatch(setSingleJobDetail(job));
+                          navigate(`/admin/job/edit/${job._id}`);
+                        }}
                       >
                         <Edit className="w-[18px]" />
                         <div>Edit</div>
-                      </Link>
+                      </div>
                       <hr />
-                      <Link
-                        to={`/admin/job/details/${job._id}`}
+                      <div
                         className="flex gap-[5px] items-center cursor-pointer hover:underline hover:text-blue-400"
+                        onClick={() => {
+                          dispatch(setSingleJobDetail(job));
+                          navigate(`/admin/job/details/${job._id}`);
+                        }}
                       >
                         <EyeIcon className="w-[18px]" />
                         <div>Details</div>
-                      </Link>
+                      </div>
                     </PopoverContent>
                   </Popover>
                 </TableCell>

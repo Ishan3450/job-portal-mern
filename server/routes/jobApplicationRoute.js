@@ -1,5 +1,4 @@
 const { Router } = require("express");
-const isLoggedIn = require("../middlewares/isLoggedIn");
 const isRecruiter = require("../middlewares/isRecruiter");
 const { applyJob, getApplicants, getAppliedJobs, updateStatus } = require("../controllers/jobApplicationController");
 
