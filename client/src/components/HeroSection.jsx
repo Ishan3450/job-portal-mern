@@ -25,10 +25,10 @@ const HeroSection = () => {
 
   function handleSearch() {
     dispatch(setSearchQuery(searchQuery));
-    navigate("/browse")
+    navigate("/browse");
   }
 
-  function handleCategorySearch(e){
+  function handleCategorySearch(e) {
     dispatch(setSearchQuery(e.target.innerText));
     navigate("/browse");
   }
@@ -62,10 +62,11 @@ const HeroSection = () => {
           Search, Apply & get Your{" "}
           <span className="text-red-600">Dream Job</span>
         </h1>
-        <p className="mb-8 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Facilis aut
-          architecto corporis repellendus! Temporibus cum assumenda, quod dolore
-          autem voluptates!
+        <p className="mb-8 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 xl:px-24 dark:text-gray-400">
+          JobHunt is a comprehensive job search platform. The application
+          facilitates job searching by connecting candidates with recruiters.
+          Candidates can browse and apply for jobs, while recruiters can
+          register their companies and post job listings.
         </p>
         <div className="flex flex-col mb-8 lg:mb-16 space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
           <form className=" w-[50%] mx-auto">
@@ -105,8 +106,11 @@ const HeroSection = () => {
           <Carousel className="mt-6">
             <CarouselContent>
               {categories.map((category, index) => (
-                <CarouselItem key={index} className="basis-1/3" >
-                  <div className="cursor-pointer border border-gray-300 hover:border-gray-500 transition duration-150 rounded-full p-2" onClick={handleCategorySearch}>
+                <CarouselItem key={index} className="basis-1/3">
+                  <div
+                    className="cursor-pointer border border-gray-300 hover:border-gray-500 transition duration-150 rounded-full p-2"
+                    onClick={handleCategorySearch}
+                  >
                     {category}
                   </div>
                 </CarouselItem>
