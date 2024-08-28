@@ -12,10 +12,11 @@ const jobApplicationRouter = require("../routes/jobApplicationRoute");
 
 const jobRouter = Router();
 
+jobRouter.get("/getJobs", getJobsBasedOnKeyword);
+
 jobRouter.use(isLoggedIn);
 
 jobRouter.post("/postJob", isRecruiter, postJob);
-jobRouter.get("/getJobs", getJobsBasedOnKeyword);
 jobRouter.get("/get/:jobId", getJobById);
 jobRouter.get("/getRecruiterJobs", isRecruiter, getRecruiterJobs);
 jobRouter.put("/update/:jobId", isRecruiter, updateJobDetails);

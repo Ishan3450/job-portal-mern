@@ -30,7 +30,7 @@ const SingleJobCard = ({ job }) => {
       <div className="flex gap-3 mt-3">
         <div className="w-[52px] border rounded-xl">
           <Avatar className="cursor-pointer">
-            <AvatarImage src="https://e7.pngegg.com/pngimages/882/225/png-clipart-google-logo-google-logo-google-search-icon-google-text-logo-thumbnail.png" />
+            <AvatarImage src={job.company.logo} />
             <AvatarFallback>Company Logo</AvatarFallback>
           </Avatar>
         </div>

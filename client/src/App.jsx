@@ -15,6 +15,7 @@ import AdminJobs from "./components/admin/AdminJobs";
 import PostJob from "./components/admin/PostJob";
 import EditJobDetails from "./components/admin/EditJobDetails";
 import AdminJobDetails from "./components/admin/AdminJobDetails";
+import Browse from "./components/Browse";
 
 function App() {
   return (
@@ -27,8 +28,9 @@ function App() {
           <Route path="/login" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/jobs" element={<Jobs />} />
-          <Route path="jobs/description/:id" element={<JobDetails />} />
+          <Route path="/jobs/description/:id" element={<JobDetails />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/browse" element={<Browse />} />
 
           {/* admin routes */}
           <Route path="/admin/companies" element={<Companies />} />

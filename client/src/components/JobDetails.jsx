@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "./ui/button";
 import {
@@ -11,9 +11,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import useGetJobById from "@/hooks/useGetJobById";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const JobDetails = () => {
   const navigate = useNavigate();
@@ -57,7 +58,14 @@ const JobDetails = () => {
     <div className="border my-5 rounded-xl p-8">
       <div className="flex justify-between">
         <div>
-          <div className="text-2xl font-semibold">{job?.company?.name}</div>
+          <div className="text-2xl font-semibold flex gap-3 items-center">
+            <Avatar>
+              <AvatarImage src={job?.company?.logo} />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+
+            {job?.company?.name}
+          </div>
           <div className="my-5">
             <ul className="flex gap-3 text-sm">
               <li className="border border-gray-200 px-2 py-1 font-bold rounded-full text-blue-700">

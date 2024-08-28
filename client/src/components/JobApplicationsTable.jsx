@@ -8,6 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useSelector } from "react-redux";
+import useGetAllAppliedJobs from "@/hooks/useGetAllAppliedJobs";
 
 const PendingBadge = () => {
   return (
@@ -35,33 +37,39 @@ const AcceptedBadge = () => {
 
 const JobApplicationsTable = () => {
   const status = "accepted";
+  // const { user } = useSelector((store) => store.auth);
+  useGetAllAppliedJobs();
+  const { appliedJobs } = useSelector((store) => store.job);
+
   return (
     <div>
       <Table>
         <TableCaption>A List of your Job Applications.</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">Date</TableHead>
+            <TableHead>Date</TableHead>
             <TableHead>Job Role</TableHead>
             <TableHead>Company</TableHead>
             <TableHead className="text-right">Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow>
-            <TableCell className="font-medium">17-07-24</TableCell>
-            <TableCell>Frontend Developer</TableCell>
-            <TableCell>Google</TableCell>
-            <TableCell className="text-right">
-              {status === "pending" ? (
-                <PendingBadge />
-              ) : status === "accepted" ? (
-                <AcceptedBadge />
-              ) : (
-                <RejectedBadge />
-              )}
-            </TableCell>
-          </TableRow>
+          {appliedJobs.map((application) => (
+            <TableRow>
+              <TableCell className="font-medium">{application.createdAt.split("T")[0]}</TableCell>
+              <TableCell>{application.job.title}</TableCell>
+              <TableCell>{application.job.company.name}</TableCell>
+              <TableCell className="text-right">
+                {application.status === "pending" ? (
+                  <PendingBadge />
+                ) : application.status === "accepted" ? (
+                  <AcceptedBadge />
+                ) : (
+                  <RejectedBadge />
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     </div>

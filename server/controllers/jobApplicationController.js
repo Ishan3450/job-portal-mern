@@ -112,7 +112,7 @@ async function updateStatus(req, res) {
         const { status } = req.body;
 
         const validStatusZodSchema = zod.object({
-            status: zod.enum(["accepted", "rejected", "pending"])
+            status: zod.enum(["accepted", "rejected"])
         })
         const validStatusRes = validStatusZodSchema.safeParse({ status });
 
@@ -124,7 +124,7 @@ async function updateStatus(req, res) {
         }
 
         const updateOperation = await JobApplication.updateOne({ _id: applicationId }, { status });
-        if (!updateOperation.acknowledged) {
+        if (!updateOperation.modifiedCount) {
             return res.status(400).json({
                 message: "Status not updated",
                 success: false
