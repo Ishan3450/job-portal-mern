@@ -2,6 +2,9 @@
 
 JobHunt is a comprehensive job search platform built using the MERN stack (MongoDB, Express, React, Node.js). The application facilitates job searching by connecting candidates with recruiters. Candidates can browse and apply for jobs, while recruiters can register their companies and post job listings.
 
+## **Demo**
+https://github.com/user-attachments/assets/c44792a0-a13c-42ee-8473-bc48a0b84002
+
 ## **Table of Contents**
 
 - [**JobHunt**](#jobhunt)
