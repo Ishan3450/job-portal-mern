@@ -139,7 +139,7 @@ async function getRecruiterJobs(req, res) {
     const jobs = await Job.find({ createdBy: recruiterId }).populate("company").populate({
       path: "applicants",
       populate: {
-        path: "applicantr"
+        path: "applicant"
       }
     });
 

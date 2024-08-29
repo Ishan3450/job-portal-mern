@@ -27,15 +27,6 @@ async function register(req, res) {
       });
     }
 
-    const isCompanyExists = await Company.findOne({ name });
-    if (isCompanyExists) {
-      return res.status(400).json({
-        message: "Company is already registered",
-        success: false,
-      });
-    }
-
-    // TODO: logo cloudinary
     const fileUri = getDataUri(file);
     const cloudinaryResponse = await cloudinary.uploader.upload(
       fileUri.content,
